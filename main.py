@@ -79,6 +79,8 @@ def parse():
     write(f"B2:B{len(names_range)+1}", names_range)
     write(f"C2:C{len(middle_price_range)+1}", middle_price_range)
 
+    fiats_range, names_range, middle_price_range = None, None, None
+
 
 def write(ranged, data):
     service.spreadsheets().values().batchUpdate(
