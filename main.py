@@ -24,7 +24,7 @@ service.spreadsheets().values().batchUpdate(
             "data": [
                 {"range": "A1:C2",
                  "majorDimension": "COLUMNS",
-                 "values": [["Код валюты", ""], ["Название валюты", ""], ["Цена р2р Бинанс", ""]]
+                 "values": [["Код валюты"], ["Название валюты"], ["Цена р2р Бинанс"]]
                  }
             ]
         }
