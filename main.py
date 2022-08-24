@@ -101,7 +101,9 @@ def parse_binance_p2p():
             if fiats[fiat] not in ["USD", "VES"]:
                 wise_val = requests.get(f'https://wise.com/ru/currency-converter/usd-to-{fiats[fiat].lower()}-rate?amount=1', headers=headers, timeout=(10, 20))
                 soup = BeautifulSoup(wise_val.text, 'lxml')
+                print(104)
                 price = soup.find("span", "text-success").text
+                print(106)
                 wise.append([price])
             elif fiats[fiat] == "USD":
                 wise.append([1.000])
@@ -118,6 +120,7 @@ def parse_binance_p2p():
                 revolut.append([1.000])
 
         except Exception as ex:
+            print('something went wrong')
             continue
 
     write("A2:G100", [["" for j in range(4)] for i in range(99)])
