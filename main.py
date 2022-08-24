@@ -86,6 +86,7 @@ def parse_binance_p2p():
             fiats_range.append([fiats[fiat]])
             names_range.append([names[fiat]])
             middle_price_range.append([amount])
+            print(89)
             try:
                 response = requests.get(f'https://www.investing.com/currencies/usd-{fiats[fiat].lower()}', headers=headers)
                 nbank_value = str(BeautifulSoup(response.text, 'lxml').find("span", "text-2xl").text)
@@ -120,6 +121,7 @@ def parse_binance_p2p():
                 revolut.append([1.000])
 
         except Exception as ex:
+            print(ex)
             print('something went wrong')
             continue
 
