@@ -1,6 +1,5 @@
 import json
 import requests
-from time import sleep
 
 import httplib2
 from googleapiclient import discovery
