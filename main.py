@@ -20,7 +20,7 @@ service.spreadsheets().values().batchUpdate(
     body={
         "valueInputOption": "USER_ENTERED",
         "data": [
-            {"range": "A1:C2",
+            {"range": "Основа!A1:C2",
              "majorDimension": "COLUMNS",
              "values": [["Код валюты"], ["Название валюты"], ["Цена р2р Бинанс"]]
              }
@@ -138,7 +138,7 @@ def write(ranged, data):
         body={
             "valueInputOption": "USER_ENTERED",
             "data": [
-                {"range": ranged,
+                {"range": "Основа!"+ranged,
                  "majorDimension": "ROWS",
                  "values": data
                  }
