@@ -7,12 +7,11 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 from bs4 import BeautifulSoup
 
-CREDENTIALS_FILE = 'credentials.json'
-spreadsheet_id = '1QcjxSx8VX5yevfSUxO1ZAE62nRVTg7iY5qtUoNJCkLE'
-credentials = ServiceAccountCredentials.from_json_keyfile_name(
-    CREDENTIALS_FILE,
-    ['https://www.googleapis.com/auth/spreadsheets',
-     'https://www.googleapis.com/auth/drive'])
+spreadsheet_id = '1s1iQV4ywYQbHsHOWOjOdQczpDiuBgbC6G4vKSZDpQnw'
+credentials = ServiceAccountCredentials.from_json_keyfile_name('credentials.json',
+                                                               ['https://www.googleapis.com/auth/spreadsheets',
+                                                                'https://www.googleapis.com/auth/drive'])
+
 httpauth = credentials.authorize(httplib2.Http())
 service = discovery.build('sheets', 'v4', http=httpauth)
 
@@ -31,7 +30,6 @@ service.spreadsheets().values().batchUpdate(
 
 
 def parse_binance_p2p():
-
     fiats = ["AED", "AFN", "AMD", "ARS", "AUD", "AZN", "BDT", "BGN", "BHD", "BIF", "BND", "BOB", "BRL", "CAD", "CHF", "CLP", "CNY", "COP", "CRC", "CZK", "DJF", "DKK", "DOP", "DZD", "EGP", "ETB", "EUR", "GBP", "GEL", "GHS", "GNF", "GTQ", "HKD", "HNL",
              "HRK", "HUF", "IDR", "INR", "ISK", "JOD", "JPY", "KES", "KGS", "KHR", "KMF", "KWD", "KZT", "LAK", "LBP", "LKR", "LYD", "MAD", "MDL", "MGA", "MMK", "MNT", "MOP", "MXN", "NGN", "NIO", "NOK", "NPR", "NZD", "OMR", "PAB", "PEN", "PGK", "PHP",
              "PKR", "PLN", "PYG", "QAR", "RON", "RSD", "RUB", "RWF", "SAR", "SCR", "SDG", "SEK", "THB", "TJS", "TMT", "TND", "TRY", "TWD", "TZS", "UAH", "UGX", "USD", "UYU", "UZS", "VES", "VND", "XAF", "XOF", "YER", "ZAR"]
