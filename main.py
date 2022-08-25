@@ -96,18 +96,21 @@ def parse_binance_p2p():
                 nbank.append([""])
 
             if fiats[fiat] not in ["USD", "VES"]:
-                wise_val = requests.get(f'https://wise.com/ru/currency-converter/usd-to-{fiats[fiat].lower()}-rate?amount=1', headers=headers, timeout=(10, 20))
-                soup = BeautifulSoup(wise_val.text, 'lxml')
-                price = soup.find("span", "text-success").text
-                wise.append([price])
+                try:
+                    wise_val = requests.get(f'https://wise.com/ru/currency-converter/usd-to-{fiats[fiat].lower()}-rate?amount=1', headers=headers, timeout=(10, 20))
+                    soup = BeautifulSoup(wise_val.text, 'lxml')
+                    price = soup.find("span", "text-success").text
+                    wise.append([price])
+                except:
+                    wise.append([""])
             elif fiats[fiat] == "USD":
                 wise.append([1.000])
             else:
                 wise.append([""])
 
             if fiats[fiat] != "USD":
-                revolut_json = json.loads(requests.get(f'https://www.revolut.com/api/exchange/quote/?amount=1&country=GB&fromCurrency=USD&isRecipientAmount=false&toCurrency={fiats[fiat]}', headers=headers).text)
                 try:
+                    revolut_json = json.loads(requests.get(f'https://www.revolut.com/api/exchange/quote/?amount=1&country=GB&fromCurrency=USD&isRecipientAmount=false&toCurrency={fiats[fiat]}', headers=headers).text)
                     revolut.append([round(revolut_json["rate"]["rate"], 3)])
                 except:
                     revolut.append([""])
