@@ -196,7 +196,7 @@ def collect_v():
         except:
             continue
 
-    write(f"I2:G{len(tr_quantity) + 1}", tr_quantity)
+    write(f"I2:I{len(tr_quantity) + 1}", tr_quantity)
 
 
 def write(ranged, data):
