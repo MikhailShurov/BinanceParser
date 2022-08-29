@@ -193,7 +193,7 @@ def collect_v():
             print(round(tradable_quantity, 3))
             tr_quantity.append([round(tradable_quantity, 3)])
         except:
-             tr_quantity.append([""])
+            tr_quantity.append([""])
             continue
 
     write(f"I2:G{len(tr_quantity) + 1}", tr_quantity)
