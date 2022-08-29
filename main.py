@@ -191,9 +191,9 @@ def collect_v():
             for item in range(len(response["data"])):
                 tradable_quantity += float(response["data"][item]["adv"]["tradableQuantity"])
             print(round(tradable_quantity, 3))
-            tr_quantity.append([round(tradable_quantity, 3)])
+            if tradable_quantity != 0:
+                tr_quantity.append([round(tradable_quantity, 3)])
         except:
-            tr_quantity.append([""])
             continue
 
     write(f"I2:G{len(tr_quantity) + 1}", tr_quantity)
