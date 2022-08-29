@@ -170,7 +170,6 @@ def collect_v():
     tr_quantity = []
     for fiat in range(len(fiats)):
         try:
-            print(fiats[fiat])
             max_num = count_number(fiats[fiat])
             data = {
                 "asset": "USDT",
@@ -190,8 +189,8 @@ def collect_v():
             tradable_quantity = 0
             for item in range(len(response["data"])):
                 tradable_quantity += float(response["data"][item]["adv"]["tradableQuantity"])
-            print(round(tradable_quantity, 3))
-            if tradable_quantity != 0:
+            print(fiats[fiat], round(tradable_quantity, 3))
+            if len(response["data"]) != 0:
                 tr_quantity.append([round(tradable_quantity, 3)])
         except:
             continue
