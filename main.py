@@ -84,7 +84,10 @@ def parse_binance_p2p():
             for item in range(len(response["data"])):
                 amount += float(response["data"][item]["adv"]["price"])
                 tradable_quantity += float(response["data"][item]["adv"]["tradableQuantity"])
-            amount = round(amount / len(response["data"]), 2)
+            if len(response["data"]) == 0:
+                amount = "Нет предложений"
+            else:
+                amount = round(amount / len(response["data"]), 2)
 
             fiats_range.append([fiats[fiat]])
             names_range.append([names[fiat]])
@@ -192,6 +195,8 @@ def collect_v():
             print(fiats[fiat], round(tradable_quantity, 3))
             if len(response["data"]) != 0:
                 tr_quantity.append([round(tradable_quantity, 3)])
+            else:
+                tr_quantity.append(["Нет предложений"])
         except:
             continue
 
