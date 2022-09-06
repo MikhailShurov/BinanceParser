@@ -227,9 +227,16 @@ def collect_volume():
 
 
 if __name__ == '__main__':
+    column_a = []
+    column_b = []
+    for fiat in fiats:
+        column_a.append([fiat])
 
-    write(f"A2:A{len(fiats) + 1}", fiats)
-    write(f"B2:B{len(names) + 1}", names)
+    for name in names:
+        column_b.append([name])
+
+    write(f"A2:A{len(column_a) + 1}", column_a)
+    write(f"B2:B{len(column_b) + 1}", column_b)
 
     t1 = Thread(target=run_parsing, args=())
     t2 = Thread(target=collect_volume, args=())
