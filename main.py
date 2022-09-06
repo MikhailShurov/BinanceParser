@@ -132,8 +132,8 @@ def parse_binance_p2p():
             print(ex, "smth went wrong...")
             continue
 
-    write("С2:D100", [["" for _ in range(2)] for _ in range(99)])
-    write("F2:G100", [["" for _ in range(2)] for _ in range(99)])
+    # write("С2:D100", [["" for _ in range(2)] for _ in range(99)])
+    # write("F2:G100", [["" for _ in range(2)] for _ in range(99)])
 
     write(f"C2:C{len(middle_price_range) + 1}", middle_price_range)
     write(f"D2:D{len(nbank) + 1}", nbank)
