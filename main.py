@@ -93,7 +93,6 @@ def parse_binance_p2p():
             names_range.append([names[fiat]])
             middle_price_range.append([amount])
 
-
             try:
                 response = requests.get(f'https://www.investing.com/currencies/usd-{fiats[fiat].lower()}', headers=headers)
                 nbank_value = str(BeautifulSoup(response.text, 'lxml').find("span", "text-2xl").text)
@@ -135,8 +134,8 @@ def parse_binance_p2p():
     write("A2:G100", [["" for _ in range(4)] for _ in range(99)])
     write("F2:G100", [["" for _ in range(2)] for _ in range(99)])
 
-    write(f"A2:A{len(fiats_range) + 1}", fiats_range)
-    write(f"B2:B{len(names_range) + 1}", names_range)
+    # write(f"A2:A{len(fiats_range) + 1}", fiats_range)
+    # write(f"B2:B{len(names_range) + 1}", names_range)
     write(f"C2:C{len(middle_price_range) + 1}", middle_price_range)
     write(f"D2:D{len(nbank) + 1}", nbank)
     write(f"F2:F{len(wise) + 1}", wise)
@@ -232,4 +231,4 @@ if __name__ == '__main__':
     t1 = Thread(target=run_parsing, args=())
     t2 = Thread(target=collect_volume, args=())
     t1.start()
-    t2.start()
+    # t2.start()
