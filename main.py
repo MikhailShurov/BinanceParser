@@ -242,4 +242,4 @@ if __name__ == '__main__':
     t1 = Thread(target=run_parsing, args=())
     t2 = Thread(target=collect_volume, args=())
     t1.start()
-    # t2.start()
+    t2.start()
