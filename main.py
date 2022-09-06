@@ -188,13 +188,14 @@ def collect_v():
             response = json.loads(r.text)
 
             tradable_quantity = 0
+            if len(response["data"]) == 0:
+                tr_quantity.append(["Нет предложений"])
+                continue
+
             for item in range(len(response["data"])):
                 tradable_quantity += float(response["data"][item]["adv"]["tradableQuantity"])
             print(fiats[fiat], round(tradable_quantity, 3))
-            if len(response["data"]) != 0:
-                tr_quantity.append([round(tradable_quantity, 3)])
-            else:
-                tr_quantity.append(["Нет предложений"])
+            tr_quantity.append([round(tradable_quantity, 3)])
         except:
             continue
 
