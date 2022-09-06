@@ -53,6 +53,7 @@ headers = {
 payment_types = ["BANK", "ABank", "SpecificBank", "MTBank", "PriorBank", "ParitetBank", "AbsolutBank", "IdeaBank", "Mobiletopup", "QIWI"]
 
 
+
 def parse_binance_p2p():
     fiats_range = []
     names_range = []
@@ -131,11 +132,9 @@ def parse_binance_p2p():
             print(ex, "smth went wrong...")
             continue
 
-    write("A2:G100", [["" for _ in range(4)] for _ in range(99)])
+    write("С2:D100", [["" for _ in range(4)] for _ in range(99)])
     write("F2:G100", [["" for _ in range(2)] for _ in range(99)])
 
-    # write(f"A2:A{len(fiats_range) + 1}", fiats_range)
-    # write(f"B2:B{len(names_range) + 1}", names_range)
     write(f"C2:C{len(middle_price_range) + 1}", middle_price_range)
     write(f"D2:D{len(nbank) + 1}", nbank)
     write(f"F2:F{len(wise) + 1}", wise)
@@ -228,6 +227,10 @@ def collect_volume():
 
 
 if __name__ == '__main__':
+
+    write(f"A2:A{len(fiats) + 1}", fiats)
+    write(f"B2:B{len(names) + 1}", names)
+
     t1 = Thread(target=run_parsing, args=())
     t2 = Thread(target=collect_volume, args=())
     t1.start()
