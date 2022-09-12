@@ -53,7 +53,6 @@ headers = {
 payment_types = ["BANK", "ABank", "SpecificBank", "MTBank", "PriorBank", "ParitetBank", "AbsolutBank", "IdeaBank", "Mobiletopup", "QIWI"]
 
 
-
 def parse_binance_p2p():
     fiats_range = []
     names_range = []
@@ -142,63 +141,62 @@ def parse_binance_p2p():
 
 
 def count_number(fiat):
+    page = 1
     data = {
         "asset": "USDT",
         "countries": [],
         "fiat": fiat,
         "merchantCheck": False,
-        "page": 1,
+        "page": None,
         "payTypes": [],
         "publisherType": None,
-        "rows": None,
+        "rows": 10,
         "tradeType": "BUY",
     }
-    num = 1
     try:
         while True:
-            data["rows"] = num
+            data["page"] = page
             r = requests.post('https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search', headers=headers, json=data)
             response = json.loads(r.text)
             if response["message"] == "Please check the input info":
-                return int(num - 1)
+                return page - 1
+            elif len(response["data"]) == 0:
+                return page - 1
             else:
-                num += 1
+                page += 1
     except:
-        return 10
+        return 1
 
 
 def collect_v():
     tr_quantity = []
     for fiat in range(len(fiats)):
         try:
-            max_num = count_number(fiats[fiat])
-            data = {
-                "asset": "USDT",
-                "countries": [],
-                "fiat": fiats[fiat],
-                "merchantCheck": False,
-                "page": 1,
-                "payTypes": [],
-                "publisherType": None,
-                "rows": max_num,
-                "tradeType": "BUY",
-            }
-
-            r = requests.post('https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search', headers=headers, json=data, timeout=(10, 20))
-            response = json.loads(r.text)
-
+            max_page = count_number(fiats[fiat])
             tradable_quantity = 0
-            if len(response["data"]) == 0:
-                tr_quantity.append(["Нет предложений"])
-                continue
+            for page in range(1, max_page + 1):
+                data = {
+                    "asset": "USDT",
+                    "countries": [],
+                    "fiat": fiats[fiat],
+                    "merchantCheck": False,
+                    "page": page,
+                    "payTypes": [],
+                    "publisherType": None,
+                    "rows": 10,
+                    "tradeType": "BUY",
+                }
 
-            for item in range(len(response["data"])):
-                tradable_quantity += float(response["data"][item]["adv"]["tradableQuantity"])
+                r = requests.post('https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search', headers=headers, json=data, timeout=(10, 20))
+                response = json.loads(r.text)
+
+                for item in range(len(response["data"])):
+                    tradable_quantity += float(response["data"][item]["adv"]["tradableQuantity"])
             print(fiats[fiat], round(tradable_quantity, 3))
             tr_quantity.append([round(tradable_quantity, 3)])
         except:
+            tr_quantity.append(["Нет предложений"])
             continue
-
     write(f"I2:I{len(tr_quantity) + 1}", tr_quantity)
 
 
