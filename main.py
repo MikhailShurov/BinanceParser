@@ -95,7 +95,7 @@ def parse_binance_p2p():
             middle_price_range.append([amount])
 
             try:
-                response = requests.get(f'https://www.investing.com/currencies/usd-{fiats[fiat].lower()}', headers=headers, timeout=(10, 20))
+                response = requests.get(f'https://ru.investing.com/currencies/usd-{fiats[fiat].lower()}', headers=headers, timeout=(10, 20))
                 print(response.text)
                 nbank_value = str(BeautifulSoup(response.text, 'lxml').find("span", "text-2xl").text)
                 try:
