@@ -8,6 +8,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from threading import *
 
 from bs4 import BeautifulSoup
+import pay_methods
 
 spreadsheet_id = '1s1iQV4ywYQbHsHOWOjOdQczpDiuBgbC6G4vKSZDpQnw'
 credentials = ServiceAccountCredentials.from_json_keyfile_name('credentials.json',
@@ -102,7 +103,8 @@ def parse_binance_p2p():
                     pass
                 mod_value = nbank_value.replace('.', ',')
                 nbank.append([mod_value])
-            except:
+            except Exception as ex:
+                print(ex)
                 nbank.append([""])
 
             if fiats[fiat] not in ["USD", "VES"]:
@@ -215,6 +217,52 @@ def write(ranged, data):
     ).execute()
 
 
+def write_payment_types(ranged, data):
+    service.spreadsheets().values().batchUpdate(
+        spreadsheetId=spreadsheet_id,
+        body={
+            "valueInputOption": "USER_ENTERED",
+            "data": [
+                {"range": "Оплата!" + ranged,
+                 "majorDimension": "ROWS",
+                 "values": data
+                 }
+            ]
+        }
+    ).execute()
+
+
+def parse_payment_types():
+    data = {
+        "asset": "USDT",
+        "countries": [],
+        "fiat": None,
+        "merchantCheck": False,
+        "page": 1,
+        "payTypes": [],
+        "publisherType": None,
+        "rows": 10,
+        "tradeType": "BUY",
+    }
+    pay = pay_methods.pay_methods
+    line = 1
+    row = 1
+    for fiat in pay:
+        for type in pay[fiat]:
+            data["fiat"] = fiat
+            data["payTypes"] = [type]
+            response = requests.post('https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search', headers=headers, json=data, timeout=(10, 20))
+            response = json.loads(response.text)
+            try:
+                price = response["data"][0]["adv"]["price"]
+            except:
+                price = "Нет информации"
+            print(type, price)
+            line += 1
+
+        row += 1
+
+
 def run_parsing():
     while True:
         parse_binance_p2p()
@@ -241,3 +289,4 @@ if __name__ == '__main__':
     t2 = Thread(target=collect_volume, args=())
     t1.start()
     t2.start()
+    # parse_payment_types()
