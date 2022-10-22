@@ -58,7 +58,7 @@ def parse_binance_p2p():
     fiats_range = []
     names_range = []
     middle_price_range = []
-    nbank = []
+    nbank = [[""] for _ in range(100)]
     wise = []
     revolut = []
 
@@ -94,19 +94,20 @@ def parse_binance_p2p():
             names_range.append([names[fiat]])
             middle_price_range.append([amount])
 
-            try:
-                response = requests.get(f'https://ru.investing.com/currencies/usd-{fiats[fiat].lower()}', headers=headers, timeout=(10, 20))
-                print(response.text)
-                nbank_value = str(BeautifulSoup(response.text, 'lxml').find("span", "text-2xl").text)
-                try:
-                    nbank_value = nbank_value.replace(',', '')
-                except:
-                    pass
-                mod_value = nbank_value.replace('.', ',')
-                nbank.append([mod_value])
-            except Exception as ex:
-                print(ex)
-                nbank.append([""])
+            data = {"filter": [{"left": "name", "operation": "nempty"}, {"left": "name,description", "operation": "match", "right": "usd"}], "options": {"lang": "ru"}, "markets": ["forex"], "symbols": {"query": {"types": ["forex"]}, "tickers": []},
+                    "columns": ["base_currency_logoid", "currency_logoid", "name", "close", "change", "change_abs", "bid", "ask", "high", "low", "Recommend.All", "description", "type", "subtype", "update_mode", "pricescale", "minmov", "fractional",
+                                "minmove2"], "sort": {"sortBy": "name", "sortOrder": "asc"}, "range": [0, 150]}
+            response = requests.post("https://scanner.tradingview.com/forex/scan", json=data)
+            response = json.loads(response.text)
+            print(response["data"][0]["s"][7:10])
+            for case in range(len(response["data"])):
+                if response["data"][case]["s"][7:10] == "USD":
+                    continue
+                else:
+                    try:
+                        nbank[fiats.index(response["data"][case]["s"][7:10])] = [float('{:.3f}'.format(1 / response["data"][case]["d"][3]))]
+                    except:
+                        continue
 
             if fiats[fiat] not in ["USD", "VES"]:
                 try:
@@ -133,9 +134,6 @@ def parse_binance_p2p():
         except Exception as ex:
             print(ex, "smth went wrong...")
             continue
-
-    # write("С2:D100", [["" for _ in range(2)] for _ in range(99)])
-    # write("F2:G100", [["" for _ in range(2)] for _ in range(99)])
 
     write(f"C2:C{len(middle_price_range) + 1}", middle_price_range)
     write(f"D2:D{len(nbank) + 1}", nbank)
