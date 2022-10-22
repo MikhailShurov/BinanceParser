@@ -102,6 +102,7 @@ def parse_binance_p2p():
             print(response["data"][0]["s"][7:10])
             for case in range(len(response["data"])):
                 if response["data"][case]["s"][7:10] == "USD":
+                    nbank[fiats.index(response["data"][case]["s"][10:13])] = [float('{:.3f}'.format(response["data"][case]["d"][3]))]
                     continue
                 else:
                     try:
