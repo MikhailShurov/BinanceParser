@@ -94,21 +94,18 @@ def parse_binance_p2p():
             names_range.append([names[fiat]])
             middle_price_range.append([amount])
 
-            data = {"filter": [{"left": "name", "operation": "nempty"}, {"left": "name,description", "operation": "match", "right": "usd"}], "options": {"lang": "ru"}, "markets": ["forex"], "symbols": {"query": {"types": ["forex"]}, "tickers": []},
-                    "columns": ["base_currency_logoid", "currency_logoid", "name", "close", "change", "change_abs", "bid", "ask", "high", "low", "Recommend.All", "description", "type", "subtype", "update_mode", "pricescale", "minmov", "fractional",
-                                "minmove2"], "sort": {"sortBy": "name", "sortOrder": "asc"}, "range": [0, 150]}
+            data = {"filter": [{"left": "name", "operation": "nempty"}, {"left": "name,description", "operation": "match", "right": "USD"}], "options": {"lang": "ru"}, "markets": ["forex"], "symbols": {"query": {"types": ["forex"]}, "tickers": []},
+            "columns": ["base_currency_logoid", "currency_logoid", "name", "close", "change", "change_abs", "bid", "ask", "high", "low", "Recommend.All", "description", "type", "subtype", "update_mode", "pricescale", "minmov", "fractional",
+                        "minmove2"], "sort": {"sortBy": "name", "sortOrder": "asc"}, "range": [0, 150]}
+
+            data["filter"][1]["right"] = f"USD{fiats[fiat]}"
+
             response = requests.post("https://scanner.tradingview.com/forex/scan", json=data)
             response = json.loads(response.text)
-            print(response["data"][0]["s"][7:10])
-            for case in range(len(response["data"])):
-                if response["data"][case]["s"][7:10] == "USD":
-                    nbank[fiats.index(response["data"][case]["s"][10:13])] = [float('{:.3f}'.format(response["data"][case]["d"][3]))]
-                    continue
-                else:
-                    try:
-                        nbank[fiats.index(response["data"][case]["s"][7:10])] = [float('{:.3f}'.format(1 / response["data"][case]["d"][3]))]
-                    except:
-                        continue
+            try:
+                nbank[fiats.index(response["data"][0]["s"][10:13])] = [response["data"][0]["d"][3]]
+            except:
+                pass
 
             if fiats[fiat] not in ["USD", "VES"]:
                 try:
@@ -288,5 +285,5 @@ if __name__ == '__main__':
     t1 = Thread(target=run_parsing, args=())
     t2 = Thread(target=collect_volume, args=())
     t1.start()
-    t2.start()
+    # t2.start()
     # parse_payment_types()
