@@ -112,7 +112,8 @@ def parse_binance_p2p():
                     wise_val = requests.get(f'https://wise.com/ru/currency-converter/usd-to-{fiats[fiat].lower()}-rate?amount=1', headers=headers, timeout=(10, 20))
                     soup = BeautifulSoup(wise_val.text, 'lxml')
                     price = soup.find("span", "text-success").text
-                    wise.append([price])
+                    toIntPrice = f"{price[:price.find('.')]},{price[price.find('.')+1:]}"
+                    wise.append([toIntPrice])
                 except:
                     wise.append([""])
             elif fiats[fiat] == "USD":
@@ -285,5 +286,5 @@ if __name__ == '__main__':
     t1 = Thread(target=run_parsing, args=())
     t2 = Thread(target=collect_volume, args=())
     t1.start()
-    # t2.start()
+    t2.start()
     # parse_payment_types()
