@@ -19,6 +19,11 @@ def parsers():
     transfer = []
     fin = []
 
+    gbp_course = requests.get(
+        "https://my.transfergo.com/api/transfers/quote?&calculationBase=sendAmount&amount=1000.00&fromCountryCode=GB&toCountryCode=US&fromCurrencyCode=GBP&toCurrencyCode=USD").text
+    gbp_course = json.loads(gbp_course);
+    gbp_course = gbp_course["deliveryOptions"]["standard"]["paymentOptions"]["card"]["quote"]["receivingAmount"]
+
     for fiat in range(len(fiats)):
         try:
             print(fiats[fiat])
@@ -44,7 +49,7 @@ def parsers():
                 amount += float(response["data"][item]["adv"]["price"])
                 tradable_quantity += float(response["data"][item]["adv"]["tradableQuantity"])
             if len(response["data"]) == 0:
-                amount = "Нет предложений"
+                amount = "Нет данных"
             else:
                 amount = round(amount / len(response["data"]), 2)
 
@@ -96,25 +101,20 @@ def parsers():
             elif fiats[fiat] == "USD":
                 revolut.append([1.000])
 
-            # TODO transfer_go
-            # if fiats[fiat] != "USD":
-            #     try:
-            #         print(str(fiats[fiat])[:2], "     lakoennb")
-            #         transfer_go = requests.get(
-            #             f"https://my.transfergo.com/api/transfers/quote?&calculationBase=receiveAmount&amount=1000&fromCountryCode={str(fiats[fiat])[:2]}&toCountryCode=US&fromCurrencyCode={fiats[fiat]}&toCurrencyCode=USD",
-            #             headers=headers).text
-            #         print(transfer_go)
-            #         transfer_go = json.loads(transfer_go)
-            #         print(transfer_go["deliveryOptions"]["standard"]["paymentOptions"]["card"]["quote"][
-            #                   "sendingAmount"])
-            #         transfer.append([round(
-            #             transfer_go["deliveryOptions"]["standard"]["paymentOptions"]["card"]["quote"][
-            #                 "sendingAmount"] / 1000, 3)])
-            #     except Exception as ex:  # NOQA
-            #         print(ex)
-            #         transfer.append([""])
-            # elif fiats[fiat] == "USD":
-            #     transfer.append([1.000])
+            if fiats[fiat] != "USD":
+                try:
+                    transfer_go = requests.get(
+                        f"https://my.transfergo.com/api/transfers/quote?&calculationBase=sendAmount&amount=1000.00&fromCountryCode=GB&toCountryCode={str(fiats[fiat])[:2]}&fromCurrencyCode=GBP&toCurrencyCode={fiats[fiat]}",
+                        headers=headers).text
+                    transfer_go = json.loads(transfer_go)
+
+                    transfer.append([round(
+                        transfer_go["deliveryOptions"]["standard"]["paymentOptions"]["card"]["quote"][
+                            "receivingAmount"] / gbp_course, 3)])
+                except Exception as ex:  # NOQA
+                    transfer.append(["Нет данных"])
+            elif fiats[fiat] == "USD":
+                transfer.append([1.000])
 
             if fiats[fiat] != "USD":
                 try:
@@ -129,13 +129,11 @@ def parsers():
                             }
                     fin_response = requests.post(
                         f'https://api.fin.do/v1/api/fin/AssumeCommission', headers=headers, json=data).text
-                    print(fin_response)
                     fin_response = json.loads(fin_response)
                     fin.append([round(fin_response["payload"]["receiver"]["amountToReceive"] / 1000, 3)])
 
-                except Exception as ex:  # NOQA
-                    print(ex)
-                    fin.append([""])
+                except:  # NOQA
+                    fin.append(["Нет данных"])
             elif fiats[fiat] == "USD":
                 fin.append([1.000])
 
@@ -144,8 +142,9 @@ def parsers():
             continue
 
     writer = GoogleSheets.Writer()
-    # writer.write(f"C2:C{len(middle_price_range) + 1}", middle_price_range)
-    # writer.write(f"D2:D{len(nbank) + 1}", nbank)
-    # writer.write(f"F2:F{len(wise) + 1}", wise)
-    # writer.write(f"G2:G{len(revolut) + 1}", revolut)
+    writer.write(f"C2:C{len(middle_price_range) + 1}", middle_price_range)
+    writer.write(f"D2:D{len(nbank) + 1}", nbank)
+    writer.write(f"F2:F{len(wise) + 1}", wise)
+    writer.write(f"G2:G{len(revolut) + 1}", revolut)
     writer.write(f"J2:J{len(fin) + 1}", fin)
+    writer.write(f"K2:K{len(transfer) + 1}", transfer)
