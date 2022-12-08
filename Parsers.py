@@ -83,7 +83,7 @@ def parsers():
                     soup = BeautifulSoup(wise_val.text, 'lxml')
                     price = soup.find("span", "text-success").text
                     price = price[:price.find('.')] + "," + price[price.find('.') + 1:]
-                    wise.append([round(float(price), 3)])
+                    wise.append([price])
                 except:  # NOQA
                     wise.append([""])
             elif fiats[fiat] == "USD":
