@@ -10,6 +10,8 @@ from Data import namesPaysend, idsPaysend
 
 import GoogleSheets
 
+from time import sleep
+
 
 def parsers():
     fiats_range = []
@@ -137,7 +139,6 @@ def parsers():
                         f'https://api.fin.do/v1/api/fin/AssumeCommission', headers=headers, json=data).text
                     fin_response = json.loads(fin_response)
                     fin.append([fin_response["payload"]["receiver"]["amountToReceive"] / 1000])
-
                 except:  # NOQA
                     fin.append(["Нет данных"])
             elif fiats[fiat] == "USD":
@@ -180,6 +181,7 @@ def parsers():
             elif fiats[fiat] == "USD":
                 mastercard.append([1.000])
 
+            sleep(2)
         except Exception as ex:
             print(ex, "smth went wrong...")
             continue
