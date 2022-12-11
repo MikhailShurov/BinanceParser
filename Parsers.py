@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from Data import fiats
 from Data import headers
 from Data import names
+from Data import namesPaysend, idsPaysend
 
 import GoogleSheets
 
@@ -18,6 +19,7 @@ def parsers():
     revolut = []
     transfer = []
     fin = []
+    paysend = []
 
     gbp_course = requests.get(
         "https://my.transfergo.com/api/transfers/quote?&calculationBase=sendAmount&amount=1000.00&fromCountryCode=GB&toCountryCode=US&fromCurrencyCode=GBP&toCurrencyCode=USD").text
@@ -138,6 +140,18 @@ def parsers():
             elif fiats[fiat] == "USD":
                 fin.append([1.000])
 
+            if fiats[fiat] != "USD":
+                try:
+                    paysend_response = requests.post(
+                        f'https://paysend.com/api/en-lv/send-money/from-the-united-states-of-america-to-{namesPaysend[fiats[fiat]]}?fromCurrId=840&toCurrId={idsPaysend[namesPaysend[fiats[fiat]]]}&isFrom=false',
+                        headers=headers).text
+                    paysend_response = json.loads(paysend_response)
+                    paysend.append([round(paysend_response["commission"]["convertRate"], 3)])
+                except:  # NOQA
+                    paysend.append(["Нет данных"])
+            elif fiats[fiat] == "USD":
+                paysend.append([1.000])
+
         except Exception as ex:
             print(ex, "smth went wrong...")
             continue
@@ -149,3 +163,4 @@ def parsers():
     writer.write(f"G2:G{len(revolut) + 1}", revolut)
     writer.write(f"J2:J{len(fin) + 1}", fin)
     writer.write(f"K2:K{len(transfer) + 1}", transfer)
+    writer.write(f"L2:L{len(paysend) + 1}", paysend)
