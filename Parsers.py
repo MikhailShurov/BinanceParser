@@ -148,13 +148,15 @@ def parsers():
                 try:
                     paysend_response = requests.post(
                         f'https://paysend.com/api/en-lv/send-money/from-the-united-states-of-america-to-{namesPaysend[fiats[fiat]]}?fromCurrId=840&toCurrId={idsPaysend[namesPaysend[fiats[fiat]]]}&isFrom=false',
-                        headers=headers).text
+                        headers=headers, timeout=(10, 100)).text
                     paysend_response = json.loads(paysend_response)
                     paysend.append([paysend_response["commission"]["convertRate"]])
                 except:  # NOQA
                     paysend.append(["Нет данных"])
             elif fiats[fiat] == "USD":
                 paysend.append([1.000])
+
+            sleep(3)
 
             if fiats[fiat] != "USD":
                 current_date = date.today()
