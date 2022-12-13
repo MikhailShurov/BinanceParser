@@ -146,17 +146,18 @@ def parsers():
 
             if fiats[fiat] != "USD":
                 try:
-                    paysend_response = requests.post(
-                        f'https://paysend.com/api/en-lv/send-money/from-the-united-states-of-america-to-{namesPaysend[fiats[fiat]]}?fromCurrId=840&toCurrId={idsPaysend[namesPaysend[fiats[fiat]]]}&isFrom=false',
-                        headers=headers, timeout=(10, 100)).text
-                    paysend_response = json.loads(paysend_response)
-                    paysend.append([paysend_response["commission"]["convertRate"]])
+                    response = requests.get(
+                        f'https://paysend.com/en-lv/send-money/from-the-united-states-of-america-to-{namesPaysend[fiats[fiat]]}?fromCurrId=840&toCurrId={idsPaysend[namesPaysend[fiats[fiat]]]}&isFrom=false').text
+                    soup = BeautifulSoup(response, 'lxml')
+                    price = soup.find("div", {"id": "component-fee"})
+                    div = price.find("span", {"class": "foo"}).text
+                    div = div[11:-4]
+                    paysend.append([div.replace('.', ',')])
+                    print(div)
                 except:  # NOQA
                     paysend.append(["Нет данных"])
             elif fiats[fiat] == "USD":
                 paysend.append([1.000])
-
-            sleep(3)
 
             if fiats[fiat] != "USD":
                 current_date = date.today()
