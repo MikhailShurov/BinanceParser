@@ -3,6 +3,7 @@ from threading import *
 import GoogleSheets
 import Parsers
 import MarketVolume
+import schedule
 
 from Data import fiats
 from Data import names
@@ -11,7 +12,9 @@ from Data import names
 class Program:
     @staticmethod
     def run_parsing():
+        schedule.every(30).minutes.do(Parsers.paysend_visa_mastercard)
         while True:
+            schedule.run_pending()
             Parsers.parsers()
 
     @staticmethod
