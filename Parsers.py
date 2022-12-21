@@ -149,8 +149,10 @@ def parsers():
                         f"https://cis.visa.com/cmsapi/fx/rates?amount=1&fee=0&utcConvertedDate={str_current_date}&exchangedate={str_current_date}&fromCurr={fiats[fiat]}&toCurr=USD",
                         headers=headers).text
                     visa_response = json.loads(visa_response)
-                    visa.append([visa_response["convertedAmount"].replace('.', ',')])
-                    # print("from visa: ", str(visa_response["convertedAmount"].replace('.', ',')), " " + str(fiats[fiat]))
+                    tmp = visa_response["convertedAmount"]
+                    tmp = tmp.replace(',', '')
+                    visa.append([tmp])
+                    print("from visa: ", tmp, " " + str(fiats[fiat]))
                 except:  # NOQA
                     visa.append(["Нет данных"])
             elif fiats[fiat] == "USD":
