@@ -152,7 +152,7 @@ def parsers():
                     tmp = visa_response["convertedAmount"]
                     tmp = tmp.replace(',', '')
                     visa.append([tmp])
-                    print("from visa: ", tmp, " " + str(fiats[fiat]))
+                    # print("from visa: ", tmp, " " + str(fiats[fiat]))
                 except:  # NOQA
                     visa.append(["Нет данных"])
             elif fiats[fiat] == "USD":
