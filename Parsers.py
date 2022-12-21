@@ -146,7 +146,7 @@ def parsers():
                     current_date.year)
                 try:
                     visa_response = requests.get(
-                        f"https://cis.visa.com/cmsapi/fx/rates?amount=1&fee=0&utcConvertedDate={str_current_date}&exchangedate={str_current_date}&fromCurr=USD&toCurr={fiats[fiat]}",
+                        f"https://cis.visa.com/cmsapi/fx/rates?amount=1&fee=0&utcConvertedDate={str_current_date}&exchangedate={str_current_date}&fromCurr={fiats[fiat]}&toCurr=USD",
                         headers=headers).text
                     visa_response = json.loads(visa_response)
                     visa.append([visa_response["convertedAmount"].replace('.', ',')])
