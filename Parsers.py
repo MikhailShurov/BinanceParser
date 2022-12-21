@@ -21,6 +21,7 @@ def parsers():
     transfer = []
     fin = []
     visa = []
+    mastercard = []
 
     gbp_course = requests.get(
         "https://my.transfergo.com/api/transfers/quote?&calculationBase=sendAmount&amount=1000.00&fromCountryCode=GB&toCountryCode=US&fromCurrencyCode=GBP&toCurrencyCode=USD").text
@@ -159,6 +160,17 @@ def parsers():
             elif fiats[fiat] == "USD":
                 visa.append([1.000])
 
+            if fiats[fiat] != "USD":
+                try:
+                    mastercard_response = requests.get(
+                        f"https://www.mastercard.com/settlement/currencyrate/conversion-rate?fxDate=0000-00-00&transCurr=USD&crdhldBillCurr={fiats[fiat]}&bankFee=0&transAmt=1").text
+                    mastercard_response = json.loads(mastercard_response)
+                    mastercard.append([mastercard_response["data"]["conversionRate"]])
+                except:  # NOQA
+                    mastercard.append(["Нет данных"])
+            elif fiats[fiat] == "USD":
+                mastercard.append([1.000])
+
         except Exception as ex:
             print(ex, "smth went wrong...")
             continue
@@ -171,12 +183,12 @@ def parsers():
     writer.write(f"J2:J{len(fin) + 1}", fin)
     writer.write(f"K2:K{len(transfer) + 1}", transfer)
     writer.write(f"M2:M{len(visa) + 1}", visa)
+    writer.write(f"N2:N{len(mastercard) + 1}", mastercard)
 
 
 def paysend_visa_mastercard():
     paysend = []
 
-    mastercard = []
     for fiat in range(len(fiats)):
         if fiats[fiat] != "USD":
             try:
@@ -193,17 +205,5 @@ def paysend_visa_mastercard():
         elif fiats[fiat] == "USD":
             paysend.append([1.000])
 
-        if fiats[fiat] != "USD":
-            try:
-                mastercard_response = requests.get(
-                    f'https://www.mastercard.ua/settlement/currencyrate/conversion-rate?fxDate=0000-00-00&transCurr=USD&crdhldBillCurr={fiats[fiat]}&bankFee=0&transAmt=1').text
-                mastercard_response = json.loads(mastercard_response)
-                mastercard.append([mastercard_response["data"]["conversionRate"]])
-            except:  # NOQA
-                mastercard.append(["Нет данных"])
-        elif fiats[fiat] == "USD":
-            mastercard.append([1.000])
-
     writer = GoogleSheets.Writer()
     writer.write(f"L2:L{len(paysend) + 1}", paysend)
-    writer.write(f"N2:N{len(mastercard) + 1}", mastercard)
