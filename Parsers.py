@@ -151,7 +151,7 @@ def parsers():
                     visa_response = json.loads(visa_response)
                     tmp = visa_response["convertedAmount"]
                     tmp = tmp.replace(',', '')
-                    tmp.replace('.', ',')
+                    tmp = tmp.replace('.', ',')
                     visa.append([tmp])
                     # print("from visa: ", tmp, " " + str(fiats[fiat]))
                 except:  # NOQA
