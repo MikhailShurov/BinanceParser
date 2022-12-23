@@ -88,7 +88,7 @@ namesPaysend = {
     "TZS": "tanzania",
     "THB": "thailand",
     "TRY": "turkey",
-    "AED": "united-arab-emirates",
+    "AED": "uae",
     "UGX": "uganda",
     "UAH": "ukraine",
     "GBP": "uk",
@@ -208,7 +208,7 @@ idsPaysend = {
     "thailand": "764",
     "togo": "768",
     "turkey": "792",
-    "united-arab-emirates": "784",
+    "uae": "784",
     "uganda": "800",
     "ukraine": "804",
     "uk": "826",
@@ -249,4 +249,15 @@ headers = {
     "accept-language": "ru",
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 "
                   "Safari/537.36 "
+}
+
+headersPaysend = {
+    "User-Agent": "PostmanRuntime/7.30.0",
+    "Accept": "*/*",
+    "Postman-Token": "39ced7f2-ea97-45e7-bd55-0cb62b2d7745",
+    "Host": "paysend.com",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
+    "Cookie": "SESSION=NGMzODgyMTQtODY3Yi00Mjc1LTg3N2EtMTRjN2YzNGYxZDRh",
+    "Content-Length": "0",
 }

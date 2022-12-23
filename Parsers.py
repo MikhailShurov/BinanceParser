@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from datetime import date
 
 from Data import fiats
-from Data import headers
+from Data import headers, headersPaysend
 from Data import names
 from Data import namesPaysend, idsPaysend
 
@@ -20,6 +20,7 @@ def parsers():
     revolut = []
     transfer = []
     fin = []
+    paysend = []
     visa = []
     mastercard = []
 
@@ -171,6 +172,20 @@ def parsers():
             elif fiats[fiat] == "USD":
                 mastercard.append([1.000])
 
+            if fiats[fiat] != "USD":
+                try:
+                    link = f"https://paysend.com/api/en-lv/send-money/from-the-united-states-of-america-to-{str(namesPaysend[fiats[fiat]])}?fromCurrId=840&toCurrId={str(idsPaysend[namesPaysend[fiats[fiat]]])}&isFrom=true"
+                    # print(link)
+                    response = requests.post(link, headers=headersPaysend)
+
+                    response = json.loads(response.text)
+                    paysend.append([str(response["commission"]["convertRate"]).replace('.', ',')])
+                    print(response["commission"]["convertRate"], ' convert rate -- ', str(fiats[fiat]))
+                except Exception as ex:  # NOQA
+                    print(ex)
+            elif fiats[fiat] == "USD":
+                paysend.append([1.000])
+
         except Exception as ex:
             print(ex, "smth went wrong...")
             continue
@@ -182,28 +197,6 @@ def parsers():
     writer.write(f"G2:G{len(revolut) + 1}", revolut)
     writer.write(f"J2:J{len(fin) + 1}", fin)
     writer.write(f"K2:K{len(transfer) + 1}", transfer)
+    writer.write(f"L2:L{len(paysend) + 1}", paysend)
     writer.write(f"M2:M{len(visa) + 1}", visa)
     writer.write(f"N2:N{len(mastercard) + 1}", mastercard)
-
-
-def paysend_visa_mastercard():
-    paysend = []
-
-    for fiat in range(len(fiats)):
-        if fiats[fiat] != "USD":
-            try:
-                response = requests.get(
-                    f'https://paysend.com/en-lv/send-money/from-the-united-states-of-america-to-{namesPaysend[fiats[fiat]]}?fromCurrId=840&toCurrId={idsPaysend[namesPaysend[fiats[fiat]]]}&isFrom=false').text
-                soup = BeautifulSoup(response, 'lxml')
-                price = soup.find("div", {"id": "component-fee"})
-                div = price.find("span", {"class": "foo"}).text
-                div = div[11:-4]
-                paysend.append([div.replace('.', ',')])
-                print(div)
-            except:  # NOQA
-                paysend.append(["Нет данных"])
-        elif fiats[fiat] == "USD":
-            paysend.append([1.000])
-
-    writer = GoogleSheets.Writer()
-    writer.write(f"L2:L{len(paysend) + 1}", paysend)
