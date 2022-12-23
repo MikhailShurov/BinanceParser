@@ -182,6 +182,7 @@ def parsers():
                     paysend.append([str(response["commission"]["convertRate"]).replace('.', ',')])
                     print(response["commission"]["convertRate"], ' convert rate -- ', str(fiats[fiat]))
                 except Exception as ex:  # NOQA
+                    paysend.append(["Нет данных"])
                     print(ex)
             elif fiats[fiat] == "USD":
                 paysend.append([1.000])
