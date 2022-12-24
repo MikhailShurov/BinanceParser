@@ -4,7 +4,10 @@ import json
 import GoogleSheets
 
 from Data import fiats
-from Data import headers
+from Data import headers, headersPaysend
+from Data import namesPaysend, idsPaysend
+
+from time import sleep
 
 
 def count_number(fiat):
@@ -37,6 +40,7 @@ def count_number(fiat):
 
 def collect_v():
     tr_quantity = []
+    paysend = []
     for fiat in range(len(fiats)):
         try:
             max_page = count_number(fiats[fiat])
@@ -65,5 +69,25 @@ def collect_v():
         except: # NOQA
             tr_quantity.append(["Нет предложений"])
             continue
+
+        if fiats[fiat] != "USD":
+            try:
+                link = f"https://paysend.com/api/en-lv/send-money/from-the-united-states-of-america-to-{str(namesPaysend[fiats[fiat]])}?fromCurrId=840&toCurrId={str(idsPaysend[namesPaysend[fiats[fiat]]])}&isFrom=true"
+
+                response = requests.post(link, headers=headersPaysend)
+                print(response)
+                response = json.loads(response.text)
+                value = [str(response["commission"]["convertRate"]).replace('.', ',')]
+                paysend.append(value)
+                print(str(fiats[fiat]), 'convert rate', value)
+                print('')
+                sleep(10)
+            except Exception as ex:  # NOQA
+                paysend.append(["Нет данных"])
+                print(ex)
+        elif fiats[fiat] == "USD":
+            paysend.append([1.000])
+
     writer = GoogleSheets.Writer()
     writer.write(f"I2:I{len(tr_quantity) + 1}", tr_quantity)
+    writer.write(f"L2:L{len(paysend) + 1}", paysend)

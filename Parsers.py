@@ -10,6 +10,8 @@ from Data import namesPaysend, idsPaysend
 
 import GoogleSheets
 
+from time import sleep
+
 
 def parsers():
     fiats_range = []
@@ -20,7 +22,6 @@ def parsers():
     revolut = []
     transfer = []
     fin = []
-    paysend = []
     visa = []
     mastercard = []
 
@@ -172,21 +173,6 @@ def parsers():
             elif fiats[fiat] == "USD":
                 mastercard.append([1.000])
 
-            if fiats[fiat] != "USD":
-                try:
-                    link = f"https://paysend.com/api/en-lv/send-money/from-the-united-states-of-america-to-{str(namesPaysend[fiats[fiat]])}?fromCurrId=840&toCurrId={str(idsPaysend[namesPaysend[fiats[fiat]]])}&isFrom=true"
-                    # print(link)
-                    response = requests.post(link, headers=headersPaysend)
-
-                    response = json.loads(response.text)
-                    paysend.append([str(response["commission"]["convertRate"]).replace('.', ',')])
-                    print(response["commission"]["convertRate"], ' convert rate -- ', str(fiats[fiat]))
-                except Exception as ex:  # NOQA
-                    paysend.append(["Нет данных"])
-                    print(ex)
-            elif fiats[fiat] == "USD":
-                paysend.append([1.000])
-
         except Exception as ex:
             print(ex, "smth went wrong...")
             continue
@@ -198,6 +184,6 @@ def parsers():
     writer.write(f"G2:G{len(revolut) + 1}", revolut)
     writer.write(f"J2:J{len(fin) + 1}", fin)
     writer.write(f"K2:K{len(transfer) + 1}", transfer)
-    writer.write(f"L2:L{len(paysend) + 1}", paysend)
+
     writer.write(f"M2:M{len(visa) + 1}", visa)
     writer.write(f"N2:N{len(mastercard) + 1}", mastercard)
