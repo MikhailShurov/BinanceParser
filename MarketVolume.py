@@ -64,7 +64,6 @@ def collect_v():
 
                 for item in range(len(response["data"])):
                     tradable_quantity += float(response["data"][item]["adv"]["tradableQuantity"])
-            print(fiats[fiat], round(tradable_quantity, 3))
             tr_quantity.append([round(tradable_quantity, 3)])
         except: # NOQA
             tr_quantity.append(["Нет предложений"])
@@ -75,12 +74,14 @@ def collect_v():
                 link = f"https://paysend.com/api/en-lv/send-money/from-the-united-states-of-america-to-{str(namesPaysend[fiats[fiat]])}?fromCurrId=840&toCurrId={str(idsPaysend[namesPaysend[fiats[fiat]]])}&isFrom=true"
 
                 response = requests.post(link, headers=headersPaysend)
+                if response.status_code == 500:
+                    paysend.append(["Недействительный ответ сервера"])
                 print(response)
                 response = json.loads(response.text)
                 value = [str(response["commission"]["convertRate"]).replace('.', ',')]
                 paysend.append(value)
                 print(str(fiats[fiat]), 'convert rate', value)
-                print('')
+
                 sleep(10)
             except Exception as ex:  # NOQA
                 paysend.append(["Нет данных"])
