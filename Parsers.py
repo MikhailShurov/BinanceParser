@@ -163,6 +163,7 @@ def parsers():
                 visa.append([1.000])
 
             if fiats[fiat] != "USD":
+                sleep(1)
                 try:
                     mastercard_response = requests.get(
                         f"https://www.mastercard.com/settlement/currencyrate/conversion-rate?fxDate=0000-00-00&transCurr=USD&crdhldBillCurr={fiats[fiat]}&bankFee=0&transAmt=1").text
