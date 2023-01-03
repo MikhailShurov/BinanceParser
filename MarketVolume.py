@@ -105,7 +105,8 @@ def collect_v():
                 tmp = tmp.replace('.', ',')
                 visa.append([tmp])
                 # print("from visa: ", tmp, " " + str(fiats[fiat]))
-            except:  # NOQA
+            except Exception as ex:  # NOQA
+                print(ex)
                 visa.append(["Нет данных"])
         elif fiats[fiat] == "USD":
             visa.append([1.000])
