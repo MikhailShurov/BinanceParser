@@ -6,6 +6,7 @@ import GoogleSheets
 from Data import fiats
 from Data import headers, headersPaysend
 from Data import namesPaysend, idsPaysend
+from datetime import date
 
 from time import sleep
 
@@ -41,6 +42,7 @@ def count_number(fiat):
 def collect_v():
     tr_quantity = []
     paysend = []
+    visa = []
     for fiat in range(len(fiats)):
         try:
             max_page = count_number(fiats[fiat])
@@ -89,6 +91,26 @@ def collect_v():
         elif fiats[fiat] == "USD":
             paysend.append([1.000])
 
+        if fiats[fiat] != "USD":
+            current_date = date.today()
+            str_current_date = "" + str(current_date.month) + "%2F" + str(current_date.day) + "%2F" + str(
+                current_date.year)
+            try:
+                visa_response = requests.get(
+                    f"https://cis.visa.com/cmsapi/fx/rates?amount=1&fee=0&utcConvertedDate={str_current_date}&exchangedate={str_current_date}&fromCurr={fiats[fiat]}&toCurr=USD",
+                    headers=headers).text
+                visa_response = json.loads(visa_response)
+                tmp = visa_response["convertedAmount"]
+                tmp = tmp.replace(',', '')
+                tmp = tmp.replace('.', ',')
+                visa.append([tmp])
+                # print("from visa: ", tmp, " " + str(fiats[fiat]))
+            except:  # NOQA
+                visa.append(["Нет данных"])
+        elif fiats[fiat] == "USD":
+            visa.append([1.000])
+
     writer = GoogleSheets.Writer()
     writer.write(f"I2:I{len(tr_quantity) + 1}", tr_quantity)
     writer.write(f"L2:L{len(paysend) + 1}", paysend)
+    writer.write(f"M2:M{len(visa) + 1}", visa)
