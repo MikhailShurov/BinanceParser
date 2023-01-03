@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from Data import fiats
 from Data import headers
 from Data import names
+from datetime import date
 
 import GoogleSheets
 
@@ -20,6 +21,7 @@ def parsers():
     revolut = []
     transfer = []
     fin = []
+    visa = []
     mastercard = []
 
     gbp_course = requests.get(
@@ -152,6 +154,32 @@ def parsers():
             elif fiats[fiat] == "USD":
                 mastercard.append([1.000])
 
+            if fiats[fiat] != "USD":
+                current_date = date.today()
+                str_current_date = ""
+                if len(str(current_date.month)) == 1:
+                    str_current_date += "0"
+                str_current_date += str(current_date.month) + "%2F"
+                if len(str(current_date.day)) == 1:
+                    str_current_date += "0"
+                str_current_date += str(current_date.day) + "%2F" + str(current_date.year)
+                try:
+                    visa_response = requests.get(
+                        f"https://cis.visa.com/cmsapi/fx/rates?amount=1&fee=0&utcConvertedDate={str_current_date}&exchangedate={str_current_date}&fromCurr={fiats[fiat]}&toCurr=USD",
+                        headers=headers).text
+                    print(str_current_date, visa_response, fiats[fiat])
+                    visa_response = json.loads(visa_response)
+                    tmp = visa_response["convertedAmount"]
+                    tmp = tmp.replace(',', '')
+                    tmp = tmp.replace('.', ',')
+                    visa.append([tmp])
+                    # print("from visa: ", tmp, " " + str(fiats[fiat]))
+                except Exception as ex:  # NOQA
+                    print(ex)
+                    visa.append(["Нет данных"])
+            elif fiats[fiat] == "USD":
+                visa.append([1.000])
+
         except Exception as ex:
             print(ex, "smth went wrong...")
             continue
@@ -163,4 +191,5 @@ def parsers():
     writer.write(f"G2:G{len(revolut) + 1}", revolut)
     writer.write(f"J2:J{len(fin) + 1}", fin)
     writer.write(f"K2:K{len(transfer) + 1}", transfer)
+    writer.write(f"M2:M{len(visa) + 1}", visa)
     writer.write(f"N2:N{len(mastercard) + 1}", mastercard)
